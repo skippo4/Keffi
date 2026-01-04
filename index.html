@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Terminal Removal Form</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --moniepoint-blue: #0A66C2;
+  --danger-red: #e74c3c;
+  --success-green: #28a745;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f9ff;
+  margin: 0;
+}
+
+.form-container {
+  max-width: 480px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.form-header {
+  background: var(--moniepoint-blue);
+  color: #fff;
+  text-align: center;
+  padding: 25px 20px;
+}
+
+.logo {
+  width: 70px;
+  margin-bottom: 10px;
+}
+
+form {
+  padding: 20px;
+}
+
+input[type="email"],
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.serial-card {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+}
+
+.serial-card input { flex: 1; }
+
+.removeSerial {
+  background: var(--danger-red);
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.add-btn {
+  background: #e6f0ff;
+  color: var(--moniepoint-blue);
+  border: 1px solid var(--moniepoint-blue);
+  padding: 10px;
+  width: 100%;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background: var(--moniepoint-blue);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+/* SUCCESS ANIMATION */
+.success {
+  display: none;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.checkmark {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--success-green);
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop 0.4s ease-out;
+}
+
+.checkmark span {
+  color: #fff;
+  font-size: 36px;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="form-container">
+  <div class="form-header">
+    <img src="log.png" class="logo" alt="Logo">
+    <h2>Terminal Removal Request</h2>
+    <p>Complete the Form</p>
+  </div>
+
+  <form id="removalForm">
+    <input type="email" id="brmEmail" placeholder="BRM Official Email" required>
+    <input type="text" id="brmName" placeholder="BRM Name" readonly>
+
+    <div id="serialContainer">
+      <div class="serial-card">
+        <input type="text" class="serial" placeholder="Serial Number" required>
+        <input type="text" class="repair" placeholder="Repair Code" required>
+        <button type="button" class="removeSerial">X</button>
+      </div>
+    </div>
+
+    <button type="button" class="add-btn" id="addSerialBtn">➕ Add Another Terminal</button>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="agree" required>
+      <label for="agree">I confirm all terminals have batteries</label>
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <div class="success" id="successMsg">
+    <div class="checkmark"><span>✓</span></div>
+    <p>Submission Successful</p>
+  </div>
+</div>
+
+<script>
+const brmDirectory = {
+  "opeyemi.obafemi@moniepoint.com": "Obafemi Opeyemi Adoga",
+    "ismaila.gulloma@moniepoint.com": "GULLOMA ISMAILA MUSA",
+    "mohammed.tukur@moniepoint.com": "MOHAMMED TUKUR",
+    "ejimofor.jibeze@moniepoint.com": "JIBEZE EJIMOFOR MICHAEL",
+    "kizito.ugwa@moniepoint.com": "UGWA KIZITO KENNEDY",
+    "grace.ekwere@moniepoint.com": "EKWERE GRACE SIMEON",
+    "cyprian.christopher@moniepoint.com": "CHRISTOPHER CYPRIAN ISIOMA",
+    "alfred.edimeh@moniepoint.com": "EDIMEH ALFRED MUSA",
+    "saminu.usman@moniepoint.com": "USMAN SAMINU",
+    "taofeek.suleiman@moniepoint.com": "SULEIMAN TAOFEEK",
+    "favour.nwobodo@moniepoint.com": "NWOBODO FAVOUR ANNABEL",
+    "ridwan.abiola@moniepoint.com": "AWORINDE RIDWAN ABIOLA",
+    "saidu.bala@moniepoint.com": "Haruna Habibu",
+    "jibril.abdullahi@moniepoint.com": "ABDULLAHI JIBRIL",
+    "godswill.charles@moniepoint.com": "Charles Godswill Francis",
+    "rosemary.john@moniepoint.com": "JOHN Rosemary",
+     "kabiru.adamu@moniepoint.com": "BALA Abdullahi",
+     "solomon.injah@moniepoint.com": "SOLOMON INJAH TARWESE"
+};
+
+const brmEmail = document.getElementById("brmEmail");
+const brmName = document.getElementById("brmName");
+const serialContainer = document.getElementById("serialContainer");
+const addSerialBtn = document.getElementById("addSerialBtn");
+const removalForm = document.getElementById("removalForm");
+const successMsg = document.getElementById("successMsg");
+const agree = document.getElementById("agree");
+
+// Auto-fill BRM Name
+brmEmail.addEventListener("input", () => {
+  brmName.value = brmDirectory[brmEmail.value.toLowerCase()] || "";
+});
+
+// Add new terminal row
+addSerialBtn.addEventListener("click", () => {
+  serialContainer.insertAdjacentHTML("beforeend", `
+    <div class="serial-card">
+      <input type="text" class="serial" placeholder="Serial Number" required>
+      <input type="text" class="repair" placeholder="Repair Code" required>
+      <button type="button" class="removeSerial">X</button>
+    </div>
+  `);
+});
+
+// Remove terminal row
+serialContainer.addEventListener("click", e => {
+  if (e.target.classList.contains("removeSerial") &&
+      document.querySelectorAll(".serial").length > 1) {
+    e.target.parentElement.remove();
+  }
+});
+
+// Submit → WhatsApp
+removalForm.addEventListener("submit", e => {
+  e.preventDefault();
+
+  const email = brmEmail.value.toLowerCase();
+
+  if (!brmDirectory[email]) {
+    alert("Invalid BRM email");
+    return;
+  }
+
+  // Build terminal list
+  let terminalList = "";
+  document.querySelectorAll(".serial").forEach((serialInput, i) => {
+    const repairInput = document.querySelectorAll(".repair")[i];
+    terminalList += `${i + 1}. Serial: ${serialInput.value}\n   Repair Code: ${repairInput.value}\n\n`;
+  });
+
+  // WhatsApp message
+  const message = `
+TERMINAL REMOVAL REQUEST
+
+BRM Name: ${brmName.value}
+BRM Email: ${brmEmail.value}
+
+TERMINALS:
+${terminalList}
+Battery Confirmed: ${agree.checked ? "YES" : "NO"}
+  `.trim();
+
+  const whatsappURL =
+    "https://wa.me/2348135341447?text=" +
+    encodeURIComponent(message);
+
+  // Show success UI
+  removalForm.style.display = "none";
+  successMsg.style.display = "block";
+
+  // Open WhatsApp
+  setTimeout(() => {
+    window.open(whatsappURL, "_blank");
+    location.reload();
+  }, 150);
+});
+</script>
+
+</body>
+</html>
